@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.we7.cc" versionCode="">
+	<application setting="true">
+		<name><![CDATA[婚礼宝]]></name>
+		<identifie><![CDATA[maixun_wedding]]></identifie>
+		<version><![CDATA[1.0.6]]></version>
+		<type><![CDATA[business]]></type>
+		<ability><![CDATA[婚礼宝]]></ability>
+		<description><![CDATA[婚礼宝]]></description>
+		<author><![CDATA[QQ:500784]]></author>
+		<url><![CDATA[]]></url>
+	</application>
+	<platform>
+		<subscribes>
+			<message type="text" />
+			<message type="image" />
+			<message type="voice" />
+			<message type="video" />
+			<message type="link" />
+			<message type="location" />
+			<message type="shortvideo" />
+			<message type="subscribe" />
+			<message type="unsubscribe" />
+			<message type="qr" />
+			<message type="trace" />
+			<message type="click" />
+			<message type="view" />
+			<message type="merchant_order" />
+			<message type="user_get_card" />
+			<message type="user_del_card" />
+			<message type="user_consume_card" />
+		</subscribes>
+		<handles>
+			<message type="text" />
+			<message type="image" />
+			<message type="voice" />
+			<message type="video" />
+			<message type="shortvideo" />
+			<message type="location" />
+			<message type="link" />
+			<message type="subscribe" />
+			<message type="qr" />
+			<message type="trace" />
+			<message type="click" />
+			<message type="merchant_order" />
+			<message type="user_get_card" />
+			<message type="user_del_card" />
+			<message type="user_consume_card" />
+		</handles>
+		<rule embed="true" />
+		<card embed="true" />
+		<supports>
+			<item type="app" />
+			<item type="wxapp" />
+			<item type="webapp" />
+			<item type="system_welcome" />
+			<item type="android" />
+			<item type="ios" />
+		</supports>
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="功能封面" do="mfuncover" state="" direct="false" />
+		</cover>
+		<rule>
+			<entry title="规则列表显示的操作" do="rule" state="" direct="false" />
+		</rule>
+		<menu>
+			<entry title="分类管理" do="category" state="" direct="false" />
+			<entry title="文章管理" do="article" state="" direct="false" />
+		</menu>
+		<home>
+			<entry title="首页导航" do="homenav" state="" direct="false" />
+		</home>
+		<profile>
+			<entry title="个人中心导航" do="pernav" state="" direct="false" />
+		</profile>
+		<shortcut>
+			<entry title="快捷功能" do="quicknav" state="" direct="false" />
+		</shortcut>
+		<function>
+			<entry title="独立功能" do="infun" state="" direct="false" />
+		</function>
+	</bindings>
+	<permissions>
+	</permissions>
+	<install><![CDATA[
+CREATE TABLE IF NOT EXISTS `ims_maixun_wedding_reply` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `rid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '规则编号',
+  `uniacid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '所属帐号',
+  `title` varchar(50) NOT NULL COMMENT '规则名称',
+  `thumb` varchar(255) NOT NULL COMMENT '规则图片',
+  `description` varchar(500) NOT NULL COMMENT '规则介绍',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_maixun_wedding` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date` bigint(11) unsigned NOT NULL DEFAULT '0' COMMENT '婚礼时间',
+  `hotel` varchar(50)  COMMENT '酒店名称',
+  `bride` varchar(255)  COMMENT '新娘',
+  `groom` varchar(255)  COMMENT '新郎',
+  `bridephone` varchar(255)  COMMENT '新娘电话',
+  `groomphone` varchar(255)  COMMENT '新郎电话',
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_maixun_wedding_user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `openid` varchar(50)  COMMENT 'openid',
+  `nickname` varchar(50)  COMMENT '微信昵称',
+  `name` varchar(50)  COMMENT '姓名',
+  `phone` bigint(11) unsigned  COMMENT '电话',
+  `role` varchar(50)  COMMENT '角色',
+  `is_manager` int(2)  COMMENT '是否创建者',
+  `wid` int(11)  COMMENT '婚礼id',
+   PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_maixun_wedding_system_case` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date` bigint(11) unsigned NOT NULL DEFAULT '0' COMMENT '执行时间',
+  `title` varchar(50)  COMMENT '标题',
+  `content` TEXT  COMMENT '简介',
+  `config` TEXT  COMMENT '配置',
+  `package` int(2)  COMMENT '套餐包',
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_maixun_wedding_wedding_case` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `wid` int(10) unsigned  COMMENT '婚礼id',
+  `tid` int(10) unsigned COMMENT '系统caseid',
+  `title` varchar(50)  COMMENT '标题',
+  `remarks` TEXT   COMMENT '备注',
+  `status` int(10)  COMMENT '状态',
+  `date` bigint(11)  COMMENT '时间',
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_maixun_wedding_system_item` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) unsigned  COMMENT '标题',
+  `icon` varchar(255)  COMMENT '图标',
+  `sort` int(5)   COMMENT '排序',
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_maixun_wedding_wedding_item` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `wid` int(10),
+  `title` varchar(50) unsigned  COMMENT '标题',
+  `icon` varchar(255)  COMMENT '图标',
+  `price` int(11)   COMMENT '开销',
+  `info` varchar(255)   COMMENT '备注',
+  `date` bigint(11)   COMMENT '时间',
+  `stid` int(11)   COMMENT '系统itemid',
+  `status` int(2)   COMMENT '状态',
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+	]]></install>
+	<uninstall><![CDATA[]]></uninstall>
+	<upgrade><![CDATA[]]></upgrade>
+</manifest>
