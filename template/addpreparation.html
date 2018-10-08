@@ -1,0 +1,103 @@
+{template 'common/header'}
+<div class="we7-page-title">标题栏</div>
+<!--顶部TAB//-->
+<ul class="we7-page-tab">
+    <li><a href="{php echo $this->createWebUrl('preparation', array('op' => 'display'))}">系统筹备管理</a></li>
+    <li  class="active"><a href="{php echo $this->createWebUrl('preparation', array('op' => 'add'))}">添加新筹备</a></li>
+</ul>
+<!--顶部TAB//-->
+
+<div class="main">
+    <form action="" class="form-horizontal form" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{$_GPC['id']}">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">筹备名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" required="required" name="title" class="form-control"
+                               value="{$package_info['name']}"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">执行时间</label>
+                    <div class="col-sm-8">
+                        <input type="text" required="required" name="zx_date" class="form-control"
+                               value="{$package_info['remarks']}"/>（婚前多少天）
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">简介</label>
+                    <div class="col-sm-8">
+                        <input type="text" required="required" name="content" class="form-control"
+                               value="{$package_info['remarks']}"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">配置</label>
+                    <div class="col-sm-8">
+                        <input type="text" required="required" name="xt_config" class="form-control"
+                               value="{$package_info['remarks']}"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">套餐</label>
+                    <div class="col-sm-8">
+                        <input type="text" required="required" name="package" class="form-control"
+                               value="{$package_info['remarks']}"/>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+            <div class="col-sm-8">
+                <input name="submit" type="submit" value="提交" class="btn btn-primary span3"/>
+                <input type="hidden" name="token" value="{$_W['token']}"/>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    function remove(id,obj){
+        $.ajax({
+            url: "{php echo $this->createWebUrl('remove', array('id'=>$rid))}", // 这个地址做了跨域处理，可以用于实际调试
+            data:{wid:id},
+            type: 'POST',
+            success: function (data) {
+                eval("var data="+data);
+                $(obj).parents("div.col-md-2").remove();
+            }
+        });
+    }
+    function del(id,obj){
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            $.ajax({
+                url: "{php echo $this->createWebUrl('del', array('id'=>$rid))}", // 这个地址做了跨域处理，可以用于实际调试
+                data:{wid:id},
+                type: 'POST',
+                success: function (data) {
+                    eval("var data="+data);
+                    $(obj).parents("div.col-md-2").remove();
+                }
+            });
+        }else{
+            return false;
+        }
+    }
+    function check(id,obj){
+        $.ajax({
+            url: "{php echo $this->createWebUrl('check', array('id'=>$rid))}", // 这个地址做了跨域处理，可以用于实际调试
+            data:{wid:id},
+            type: 'POST',
+            success: function (data) {
+                eval("var data="+data);
+                $(obj).parents("div.col-md-2").remove();
+            }
+        });
+    }
+</script>
+
+{template 'common/footer'}

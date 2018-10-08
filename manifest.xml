@@ -3,7 +3,7 @@
 	<application setting="true">
 		<name><![CDATA[婚礼宝]]></name>
 		<identifie><![CDATA[maixun_wedding]]></identifie>
-		<version><![CDATA[1.0.6]]></version>
+		<version><![CDATA[1.0.8]]></version>
 		<type><![CDATA[business]]></type>
 		<ability><![CDATA[婚礼宝]]></ability>
 		<description><![CDATA[婚礼宝]]></description>
@@ -66,8 +66,10 @@
 			<entry title="规则列表显示的操作" do="rule" state="" direct="false" />
 		</rule>
 		<menu>
-			<entry title="分类管理" do="category" state="" direct="false" />
-			<entry title="文章管理" do="article" state="" direct="false" />
+			<entry title="婚礼管理" do="wedding" state="" direct="false" />
+			<entry title="用户管理" do="manage" state="" direct="false" />
+			<entry title="筹备管理" do="preparation" state="" direct="false" />
+			<entry title="费用管理" do="cost" state="" direct="false" />
 		</menu>
 		<home>
 			<entry title="首页导航" do="homenav" state="" direct="false" />

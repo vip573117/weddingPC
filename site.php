@@ -21,6 +21,20 @@ class Maixun_weddingModuleSite extends WeModuleSite {
 		  )), 'error');
 		}
 	}
+    public function __mobile($f_name)
+    {
+        global $_W, $_GPC;
+        $weid = $_W['uniacid'];
+        include_once 'inc/mobile/' . strtolower(substr($f_name, 8)) . '.inc.php';
+    }
+
+    public function __web($f_name)
+    {
+        global $_W, $_GPC;
+        $weid = $_W['uniacid'];
+        include_once 'inc/web/' . strtolower(substr($f_name, 5)) . '.inc.php';
+    }
+
 	public function doMobileMfuncover() {
 		//这个操作被定义用来呈现 功能封面
 	}
@@ -116,4 +130,30 @@ class Maixun_weddingModuleSite extends WeModuleSite {
 		//这个操作被定义用来呈现 微站独立功能
 	}
 
+    //婚礼管理
+    public function doWebwedding() {
+        $this->__web(__FUNCTION__);
+    }
+    //用户管理
+    public function doWebmanage() {
+        $this->__web(__FUNCTION__);
+    }
+    //开销管理
+    public function doWebcost() {
+        $this->__web(__FUNCTION__);
+    }
+    //筹备管理
+    public function doWebpreparation() {
+        $this->__web(__FUNCTION__);
+    }
+
+    //公共返回方法
+    public function my_message($code,$data,$msg){
+        $obj = new stdClass();
+        $obj->code = $code;
+        $obj->data = $data;
+        $obj->msg = $msg;
+        echo json_encode($obj);
+        die();
+    }
 }

@@ -1,0 +1,125 @@
+{template 'common/header'}
+<div class="we7-page-title">标题栏</div>
+<!--顶部TAB//-->
+<ul class="we7-page-tab">
+    <li class="active"><a href="#">婚礼管理</a></li>
+    <!--<li><a href="#">标签二</a></li>-->
+</ul>
+<!--顶部TAB//-->
+{if $operation == 'display'}
+<div class="main">
+    <!--<ul class="nav nav-tabs">-->
+        <!--<li{if $_GPC['ft'] != 2 && $_GPC['ft'] != 3} class="active"{/if}><a href="{php echo $this->createWebUrl('category',array('ft'=>1));}">子标签一</a></li>-->
+        <!--<li{if $_GPC['ft'] == 2} class="active"{/if}><a href="{php echo $this->createWebUrl('category',array('ft'=>2));}">子标签二</a></li>-->
+        <!--<li{if $_GPC['ft'] == 3} class="active"{/if}><a href="{php echo $this->createWebUrl('category',array('ft'=>3));}">子标签三</a></li>-->
+        <!--<li><a href="{php echo $this->createWebUrl('category',array('op'=>'post'));}"><i class="fa fa-plus"></i> 新增</a></li>-->
+    <!--</ul>-->
+
+    <!--<div class="panel panel-info">-->
+        <!--<div class="panel-heading">筛选</div>-->
+        <!--<div class="panel-body">-->
+            <!--<form action="" method="post" class="form-horizontal" enctype="multipart/form-data" role="form">-->
+                <!--<input type="hidden" name="c" value="site">-->
+                <!--<input type="hidden" name="a" value="entry">-->
+                <!--<input type="hidden" name="do" value="{$_GPC['do']}">-->
+                <!--<input type="hidden" name="m" value="maixun_wedding" />-->
+                <!--<div class="form-group">-->
+                    <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">酒店</label>-->
+                    <!--<div class="col-sm-4">-->
+                        <!--<input class="form-control" name="keyword" type="text" value="{$_GPC['keyword']}">-->
+                    <!--</div>-->
+                    <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">婚礼标题</label>-->
+                    <!--<div class="col-sm-4">-->
+                        <!--<input class="form-control" name="title" type="text" value="{$_GPC['title']}">-->
+                    <!--</div>-->
+                    <!--<div class=" col-xs-12 col-sm-2 col-lg-2">-->
+                        <!--<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</form>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            数据列表
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover">
+                <thead class="navbar-inner">
+                <tr>
+                    <th style="width:60px;">ID</th>
+                    <th>酒店</th>
+                    <th style="width:170px; text-align:center;">新娘</th>
+                    <th style="text-align:center;">新娘电话</th>
+                    <th style="width:170px; text-align:center;">新郎</th>
+                    <th style="text-align:center;">新郎电话</th>
+                    <th style="text-align:center;width:180px;">婚礼时间</th>
+                    <th style="text-align:center;">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {loop $weddinglist $row}
+                <tr>
+                    <td class="row-first">{$row['id']}</td>
+                    <td>{$row['hotel']}</td>
+                    <td align="center">{$row['bride']}</td>
+                    <td align="center">{$row['bridephone']}</td>
+                    <td align="center">{$row['groom']}</td>
+                    <td align="center">{$row['groomphone']}</td>
+                    <td align="center">{php echo date('Y-m-d',$row['wd_date'])}</td>
+                    <td align="center">
+                        <a href="{php echo $this->createWebUrl('preparation', array('id'=>$row['id']));}" >详情</a>
+                        <!--<a href="{php echo $this->createWebUrl('list', array('id'=>$row['rid']));}" >参与数据</a> |-->
+                        <!--<a href="{php echo $this->createWebUrl('export', array('id'=>$row['rid']));}"  onclick="return confirm('确定要导出数据吗?')">导出数据</a> |-->
+                    </td>
+                </tr>
+                {/loop}
+                </tbody>
+            </table>
+            {$pager}
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function remove(id,obj){
+        $.ajax({
+            url: "{php echo $this->createWebUrl('remove', array('id'=>$rid))}", // 这个地址做了跨域处理，可以用于实际调试
+            data:{wid:id},
+            type: 'POST',
+            success: function (data) {
+                eval("var data="+data);
+                $(obj).parents("div.col-md-2").remove();
+            }
+        });
+    }
+    function del(id,obj){
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg)==true){
+            $.ajax({
+                url: "{php echo $this->createWebUrl('del', array('id'=>$rid))}", // 这个地址做了跨域处理，可以用于实际调试
+                data:{wid:id},
+                type: 'POST',
+                success: function (data) {
+                    eval("var data="+data);
+                    $(obj).parents("div.col-md-2").remove();
+                }
+            });
+        }else{
+            return false;
+        }
+    }
+    function check(id,obj){
+        $.ajax({
+            url: "{php echo $this->createWebUrl('check', array('id'=>$rid))}", // 这个地址做了跨域处理，可以用于实际调试
+            data:{wid:id},
+            type: 'POST',
+            success: function (data) {
+                eval("var data="+data);
+                $(obj).parents("div.col-md-2").remove();
+            }
+        });
+    }
+</script>
+{/if}
+{template 'common/footer'}
