@@ -49,12 +49,38 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
         $info['cb_num'] = count(pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_wedding_case') . " WHERE  wid= :wid and status = 1", [":wid" => $info['wid']]));
         $info['kx_num']  = count(pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_wedding_item') . " WHERE  wid= :wid and status = 1", [":wid" => $info['wid']]));
         $info['wd_date'] = date('Y-m-d', $info['wd_date']);
+        $info['wd_time'] =  $this->diffBetweenTwoDays(date('Y-m-d'), $info['wd_date']);
 
         $data = array(
             'openid' => $openid,
             'info' => $info
         );
         $this->my_message(200, $data, 'success');
+    }
+
+    public function doPageCode()
+    {
+        global $_GPC, $_W;
+        $url = "https://api.weixin.qq.com/sns/jscode2session?appid=wx3831172bbb8d3427&secret=11d9ba1c8baadb7425655ef6da7cc0a3&js_code=" . $_GPC['code'] . "&grant_type=authorization_code";
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $back = curl_exec($curl);
+        if ($back === false) {
+            $openid = 0;
+            echo $openid;
+        } else {
+            $s = json_decode($back);
+            $openid = $s->openid;
+        }
+        curl_close($curl);
+
+        if (empty($openid)) {
+            $this->my_message(202, [], 'openid错误');
+        }else{
+            $this->my_message(200, array('openid' => $openid), 'success');
+        }
+
     }
 
 
@@ -72,6 +98,21 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
     }
 
     /**
+     * 查询系统开销
+     * */
+    public function doPageselectitem()
+    {
+        global $_GPC, $_W;
+        $item_list = pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_system_item') );
+            if ($item_list){
+                $this->my_message(200, $item_list, 'success');
+            }else{
+                $this->my_message(201, '', '没有数据');
+            }
+
+    }
+
+    /**
      * 查询婚礼
      * */
     public function doPageselectwedding()
@@ -81,6 +122,35 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
         $wedding_data = pdo_fetch("SELECT * FROM " . tablename('maixun_wedding') . " WHERE  id= :id ", [":id" => $wid]);
         $wedding_data['wd_date'] = date('Y-m-d', $wedding_data['wd_date']);
         $this->my_message(200, $wedding_data, 'success');
+    }
+    public function doPageuseradd()
+    {
+        global $_GPC, $_W;
+
+        $wid = $_GPC['wid'];
+        $name = $_GPC['name'];
+        $phone = $_GPC['phone'];
+        $role = $_GPC['role'];
+        $openid = $_GPC['openid'];
+
+        $inset_data = array(
+            'name' => $name,
+            'phone' => $phone,
+            'role' =>$role,
+            'openid' =>$openid,
+            'wid' =>$wid,
+        );
+
+        $res = pdo_insert('maixun_wedding_user', $inset_data);
+            if ($res){
+                $this->my_message(200, '', 'success');
+            }else{
+                $this->my_message(202, '', 'success');
+            }
+
+
+
+
     }
 
 

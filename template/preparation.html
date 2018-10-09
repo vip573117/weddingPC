@@ -62,7 +62,7 @@
                     <td align="center">{$row['config']}</td>
                     <td align="center">{$row['package']}</td>
                     <td align="center">
-                        <a href="{php echo $this->createWebUrl('preparation', array('id'=>$row['id']));}" >删除</a>
+                        <a href="{php echo $this->createWebUrl('preparation', array('id'=>$row['id'],'op'=>'edit'));}" >编辑</a>
                         <!--<a href="{php echo $this->createWebUrl('list', array('id'=>$row['rid']));}" >参与数据</a> |-->
                         <!--<a href="{php echo $this->createWebUrl('export', array('id'=>$row['rid']));}"  onclick="return confirm('确定要导出数据吗?')">导出数据</a> |-->
                     </td>

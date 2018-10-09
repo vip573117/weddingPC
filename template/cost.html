@@ -3,7 +3,7 @@
 <!--顶部TAB//-->
 <ul class="we7-page-tab">
     <li class="active"><a href="#">系统开销</a></li>
-    <li><a href="#">添加新开销</a></li>
+    <li><a href="{php echo $this->createWebUrl('cost', array('op' => 'add'))}">添加新开销</a></li>
 </ul>
 <!--顶部TAB//-->
 {if $operation == 'display'}
@@ -65,7 +65,7 @@
                     </td>
                     <td align="center">{$row['sort']}</td>
                     <td align="center">
-                        <a href="{php echo $this->createWebUrl('preparation', array('id'=>$row['id']));}" >详情</a>
+                        <a href="{php echo $this->createWebUrl('cost', array('id'=>$row['id'],'op' => 'edit'));}" >编辑</a>
                         <!--<a href="{php echo $this->createWebUrl('list', array('id'=>$row['rid']));}" >参与数据</a> |-->
                         <!--<a href="{php echo $this->createWebUrl('export', array('id'=>$row['rid']));}"  onclick="return confirm('确定要导出数据吗?')">导出数据</a> |-->
                     </td>

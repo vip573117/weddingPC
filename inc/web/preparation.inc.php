@@ -29,9 +29,66 @@ if ($operation == 'display') {
 //（前台用pager标签可以直接显示）
     $pager = pagination($total, $pindex, $psize);
     include $this->template('preparation');//vaccine
-} elseif ($operation == 'post') {
-
-}elseif ($operation == 'add') {
+} else if ($operation == 'edit') {
+    $id = $_GPC['id'];
+    if (empty($id)){
+        message('id错误', '', 'error');
+    }
+    if($_W['ispost']){
+        $case_date = $_GPC['case_date'];
+        $title = $_GPC['title'];
+        $content = $_GPC['content'];
+        $config = $_GPC['config'];
+        $package = $_GPC['package'];
+        if (empty($title)){
+            message('标题为空', '', 'error');
+        }
+        if (empty($case_date)){
+            message('执行时间为空', '', 'error');
+        }
+        $updata_data = array(
+            'title' =>$title,
+            'case_date' =>$case_date,
+            'content' =>$content,
+            'config' =>$config,
+            'package' =>$package,
+        );
+        $result = pdo_update('maixun_wedding_system_case', $updata_data, array('id' => $id));
+        if ($result){
+            message('修改成功', referer(), 'success');
+        }else{
+            message('修改失败', '', 'error');
+        }
+    }
+    $info = pdo_fetch("SELECT * FROM " . tablename('maixun_wedding_system_case'). " WHERE id=:id", array(':id' => $id));
     include $this->template('addpreparation');//vaccine
-//        var_dump('dfgh');
+} else if ($operation == 'add') {
+    if($_W['ispost']){
+        $case_date = $_GPC['case_date'];
+        $title = $_GPC['title'];
+        $content = $_GPC['content'];
+        $config = $_GPC['config'];
+        $package = $_GPC['package'];
+        if (empty($title)){
+            message('标题为空', '', 'error');
+        }
+        if (empty($case_date)){
+            message('执行时间为空', '', 'error');
+        }
+        $insert_data = array(
+            'title' =>$title,
+            'case_date' =>$case_date,
+            'content' =>$content,
+            'config' =>$config,
+            'package' =>$package,
+        );
+        $result = pdo_insert('maixun_wedding_system_case', $insert_data);
+        if ($result){
+            message('添加成功', referer(), 'success');
+        }else{
+            message('添加失败', '', 'error');
+        }
+    }
+
+    include $this->template('addpreparation');//vaccine
 }
