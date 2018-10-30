@@ -6,14 +6,22 @@
  * @url
  */
 defined('IN_IA') or exit('Access Denied');
+load()->func('tpl');
 
 class Maixun_weddingModuleWxapp extends WeModuleWxapp
 {
     //public $token = 'maixun_demo_token'; //接口通信token
 
+    public function __construct()
+    {
+        global $_W;
+    }
+
     public function doPageIndex()
     {
+
         global $_GPC, $_W;
+
         $url = "https://api.weixin.qq.com/sns/jscode2session?appid=wx3831172bbb8d3427&secret=11d9ba1c8baadb7425655ef6da7cc0a3&js_code=" . $_GPC['code'] . "&grant_type=authorization_code";
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -47,9 +55,16 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
         }
 
         $info['cb_num'] = count(pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_wedding_case') . " WHERE  wid= :wid and status = 1", [":wid" => $info['wid']]));
-        $info['kx_num']  = count(pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_wedding_item') . " WHERE  wid= :wid and status = 1", [":wid" => $info['wid']]));
-        $info['wd_date'] = date('Y-m-d', $info['wd_date']);
-        $info['wd_time'] =  $this->diffBetweenTwoDays(date('Y-m-d'), $info['wd_date']);
+        $info['kx_num'] = count(pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_wedding_item') . " WHERE  wid= :wid and status = 1", [":wid" => $info['wid']]));
+        if ($info['wd_date'] > time()) {
+            $info['wd_date'] = date('Y-m-d', $info['wd_date']);
+            $info['wd_time'] = $this->diffBetweenTwoDays($info['wd_date'], date('Y-m-d'));
+
+        } else {
+            $info['wd_date'] = date('Y-m-d', $info['wd_date']);
+            $info['wd_time'] = 0;
+        }
+
 
         $data = array(
             'openid' => $openid,
@@ -77,7 +92,7 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
 
         if (empty($openid)) {
             $this->my_message(202, [], 'openid错误');
-        }else{
+        } else {
             $this->my_message(200, array('openid' => $openid), 'success');
         }
 
@@ -103,12 +118,12 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
     public function doPageselectitem()
     {
         global $_GPC, $_W;
-        $item_list = pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_system_item') );
-            if ($item_list){
-                $this->my_message(200, $item_list, 'success');
-            }else{
-                $this->my_message(201, '', '没有数据');
-            }
+        $item_list = pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_system_item'));
+        if ($item_list) {
+            $this->my_message(200, $item_list, 'success');
+        } else {
+            $this->my_message(201, '', '没有数据');
+        }
 
     }
 
@@ -123,6 +138,7 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
         $wedding_data['wd_date'] = date('Y-m-d', $wedding_data['wd_date']);
         $this->my_message(200, $wedding_data, 'success');
     }
+
     public function doPageuseradd()
     {
         global $_GPC, $_W;
@@ -136,19 +152,17 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
         $inset_data = array(
             'name' => $name,
             'phone' => $phone,
-            'role' =>$role,
-            'openid' =>$openid,
-            'wid' =>$wid,
+            'role' => $role,
+            'openid' => $openid,
+            'wid' => $wid,
         );
 
         $res = pdo_insert('maixun_wedding_user', $inset_data);
-            if ($res){
-                $this->my_message(200, '', 'success');
-            }else{
-                $this->my_message(202, '', 'success');
-            }
-
-
+        if ($res) {
+            $this->my_message(200, '', 'success');
+        } else {
+            $this->my_message(202, '', 'success');
+        }
 
 
     }
@@ -186,33 +200,33 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
         }
         //查询开销记录
         if ($type_id == 1) {
-            $weeklist = ['星期一','星期二','星期三','星期四','星期五','星期六','星期日'];
-            date("N",time());//星期
+            $weeklist = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+            date("N", time());//星期
             $money_list = pdo_fetchall("SELECT * FROM " . tablename('maixun_wedding_wedding_item') . " WHERE  wid= :wid and status = 1 ORDER BY item_date DESC", [":wid" => $wid]);
             $res_data = array();
             $money_data = $money_list;
             foreach ($money_data as $k => $item) {
-                $money_data[$k]['day'] =  date("Y-m-d",$item['item_date']);
-                $money_data[$k]['week']  = $weeklist[date("N",$item['item_date'])-1];
+                $money_data[$k]['day'] = date("Y-m-d", $item['item_date']);
+                $money_data[$k]['week'] = $weeklist[date("N", $item['item_date']) - 1];
             }
             foreach ($money_data as $v => $vo) {
-                    if ($v>0){
-                        if ($vo['day'] == $money_data[$v-1]['day']){
-                            $res_data[$v-1]['expend'] =  $res_data[$v-1]['expend']+$vo['price'];
-                            array_push( $res_data[$v-1]['expdata'],$money_list[$v]);
-                        }else{
-                            $res_data[$v]['day'] = $vo['day'];
-                            $res_data[$v]['week'] = $vo['week'];
-                            $res_data[$v]['expend'] = $vo['price'];
-                            $res_data[$v]['expdata'][] = $money_list[$v];
-                        }
-
-                    }else{
+                if ($v > 0) {
+                    if ($vo['day'] == $money_data[$v - 1]['day']) {
+                        $res_data[$v - 1]['expend'] = $res_data[$v - 1]['expend'] + $vo['price'];
+                        array_push($res_data[$v - 1]['expdata'], $money_list[$v]);
+                    } else {
                         $res_data[$v]['day'] = $vo['day'];
                         $res_data[$v]['week'] = $vo['week'];
                         $res_data[$v]['expend'] = $vo['price'];
                         $res_data[$v]['expdata'][] = $money_list[$v];
                     }
+
+                } else {
+                    $res_data[$v]['day'] = $vo['day'];
+                    $res_data[$v]['week'] = $vo['week'];
+                    $res_data[$v]['expend'] = $vo['price'];
+                    $res_data[$v]['expdata'][] = $money_list[$v];
+                }
 
             }
             $this->my_message(200, $res_data, 'success');
@@ -285,7 +299,7 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
      * */
     public function doPageaddcase()
     {
-        global $_GPC,$_W;
+        global $_GPC, $_W;
         $wid = $_GPC['wid'];
         $openid = $_GPC['openid'];
         $startDate = $_GPC['startDate'];
@@ -305,8 +319,8 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
             'wid' => $wid,
             'title' => $title,
             'status' => 0,
-            'case_date' =>$startDate,
-            'content' =>$content,
+            'case_date' => $startDate,
+            'content' => $content,
         );
         $resx = pdo_insert('maixun_wedding_wedding_case', $inset_data);
         if ($resx) {
@@ -316,12 +330,13 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
         }
 
     }
+
     /**
      * 添加开销
      * */
     public function doPageadditem()
     {
-        global $_GPC,$_W;
+        global $_GPC, $_W;
         $wid = $_GPC['wid'];
         $openid = $_GPC['openid'];
         $money = $_GPC['money'];
@@ -343,11 +358,11 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
             'wid' => $wid,
             'title' => $title,
             'icon' => $icon,
-            'price' =>$money,
-            'openid' =>$openid,
-            'stid' =>$id==-1?'':$id,
-            'item_date' =>time(),
-            'status' =>1,
+            'price' => $money,
+            'openid' => $openid,
+            'stid' => $id == -1 ? '' : $id,
+            'item_date' => time(),
+            'status' => 1,
         );
         $resx = pdo_insert('maixun_wedding_wedding_item', $inset_data);
         if ($resx) {
@@ -455,6 +470,127 @@ class Maixun_weddingModuleWxapp extends WeModuleWxapp
         }
     }
 
+
+    /**
+     *关键代码  保存formid
+     *
+     */
+    public function doPageSaveFormIds()
+    {
+        global $_GPC, $_W;
+        $openId = $_GPC['openId'];
+        $formIds = $_GPC['formIds'][0];//获取formIds数组
+//         $res = $this->_get($openId);
+////
+//         var_dump($res);die();
+        if ($formIds) {
+            $res = $this->_saveFormIdsArray($openId, $formIds);//保存
+        }
+        if ($res) {
+            $this->my_message(200, $res, '存成功');
+        } else {
+            $this->my_message(201, '', '表单数据为空');
+        }
+    }
+
+    private function _get($openId)
+    {
+        $case_data = pdo_fetch("SELECT * FROM " . tablename('maixun_wedding_formid') . " WHERE  openid= :openid and status = 0 and endtime > ".time()." ORDER BY endtime", array('openid' => $openId));
+        if ($case_data){
+            return $case_data;
+        }else{
+            return FALSE;
+        }
+
+    }
+
+    private function _save($openId, $data)
+    {
+        $inset_data = array(
+            'formid' => $data,
+            'openid' => $openId,
+            'endtime' => time() + 604800,
+            'status' => 0,
+        );
+        $res = pdo_insert('maixun_wedding_formid', $inset_data);
+        return $res;//修改为你自己的Redis调用方式
+    }
+
+    private function _saveFormIdsArray($openId, $formid)
+    {
+        return $this->_save($openId, $formid);
+    }
+    /**
+     *使用 formid
+     *
+     */
+
+////设置异步任务
+//    public function put_task($data,$priority=2,$delay=3,$ttr=60){//任务数据、优先级、时间定时、任务处理时间
+//        $pheanstalk = new Pheanstalk('127.0.0.1:11300');
+//        return $pheanstalk ->useTube('test') ->put($data,$priority,$delay,$ttr);
+//    }
+////执行异步任务
+//    public function run() {
+//        while(1) {
+//            $job = $this->pheanstalk->watch('test')->ignore('default')->reserve();//监听任务
+//            $this->send_notice_by_key($job->getData());//执行模板消息的发送
+//            $this->pheanstalk->delete($job);//删除任务
+//            $memory = memory_get_usage();
+//            usleep(10);
+//        }
+//    }
+//1.取出一个可用的用户openId对应的推送码
+    public function _getFormId($openId)
+    {
+//        $openId = 'oVRsK0SG7RTUfYtI6TTdsveqL8HI';
+        $res = $this->_get($openId);
+        if ($res) {
+            if (!count($res)) {
+                return FALSE;
+            }
+            pdo_update('maixun_wedding_formid', ['status' => 1], array('id' => $res['id']));
+            return $res['formid'];
+        } else {
+            return FALSE;
+        }
+    }
+
+
+//2.拼装模板，创建通知内容
+    private function create_template($openId, $formId, $content)
+    {
+        $templateData['keyword1']['value'] = '打卡即将开始';
+        $templateData['keyword1']['color'] = '#d81e06';
+        $templateData['keyword2']['value'] = '打卡名称';
+        $templateData['keyword2']['color'] = '#1aaba8';
+        $templateData['keyword3']['value'] = '05:00';
+        $templateData['keyword4']['value'] = '备注说明';
+        $data['touser'] = $openId;
+        $data['template_id'] = '模板id';
+        $data['page'] = 'pages/detail/detail?id=1000';//用户点击模板消息后的跳转页面
+        $data['form_id'] = $formId;
+        $data['data'] = $templateData;
+        return json_encode($data);
+    }
+
+//3.执行模板消息发布
+    public function send_notice($key)
+    {
+        $openId = '用户openId';
+        $formId = $this->getFormId($openId);//获取formId
+        $access_token = '获取access_token';
+        $content = '通知内容';//可通过$key作为键来获取对应的通知数据
+        if ($access_token) {
+            $templateData = $this->create_template($openId, $formId, $content);//拼接模板数据
+            $res = json_decode($this->http_post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' . $access_token, $templateData));
+            if ($res->errcode == 0) {
+                return $res;
+            } else {
+                return false;
+            }
+        }
+    }
     //计算两个时间相差天数
     function diffBetweenTwoDays($day1, $day2)
     {
